@@ -1,0 +1,38 @@
+#pragma config(Sensor, in1,    linefollow,     sensorLineFollower)
+#pragma config(Motor,  port1,           flashlight,    tmotorVexFlashlight, openLoop, reversed)
+#pragma config(Motor,  port3,           turntable,     tmotorServoStandard, openLoop)
+#pragma config(Motor,  port5,           feedmotor,     tmotorServoStandard, openLoop)
+//*Activity 3.3.1 - Material sorter -
+// Jason, Mike, and Bill
+// Design and build Vex device that can separate material based on (1) PHYSICAL PROPERTY, and (2) SENSOR PROPERTY
+// Build a hopper and feed mechanisn - physical sorting mechanism - sensor driven sorting mechanism and sensor
+// driven collection mechanism
+// hopper is impeller driven by servo.  move it forward to eject material after sensor inspection
+// reverse to position for proper line follower reading
+// Need the flashlight to help the line follower determine transparency/opacity of material in queue
+// use Line follower to set transparent/opaque flag
+// if opaque - turn turntable to position hopper for wood
+// if transparent - turn turntable to position hopper for delrin
+// if steel, mass of steel will force lever to make it fall in steel hopper
+// January 29, 2016  (c) all rights reserved
+
+int opaque = 0;                           // opaque variable used during troubleshooting
+int follower = 0;                         // follower variable used during troubleshooting
+task main()                               // main
+{
+	turnFlashlightOn(flashlight, -127);     // keep flashlight on throughout
+	while (true)                            // while to build cycle
+	{
+		follower = SensorValue[linefollow];   // set troubleshooting variable
+		if (SensorValue[linefollow]>200 )     // if transparent
+		{
+			setServo(turntable, 110);           // move to the delrin hopper
+		}
+		else                                  // if not,
+			setServo(turntable, -60);           // move to the wood hopper
+		wait(5);                            // pause for 5 seconds
+		setServo(feedmotor,-127);           // advance feed impeller
+		wait(2);                            // wait 5
+		setServo(feedmotor,80);             // return to original state to position for reading
+	}
+}
